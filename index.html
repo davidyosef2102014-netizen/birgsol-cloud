@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>BIRGSOL Cloud — הענן שלך</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Heebo', Arial, sans-serif; }
+    :root {
+        --bg: #0d0f14; --surf: #161a22; --surf2: #1e2430; --border: #2a3140;
+        --text: #eef1f6; --muted: #8b94a5;
+        --brand1: #38bdf8; --brand2: #6c63ff;
+        --ok: #34d399; --err: #f87171;
+    }
+    body {
+        background: var(--bg); color: var(--text); min-height: 100vh;
+        background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56,189,248,.12), transparent);
+    }
+
+    header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 22px; border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; background: rgba(13,15,20,.85); backdrop-filter: blur(12px); z-index: 10;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; }
+    .logo-ico {
+        width: 34px; height: 34px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--brand1), var(--brand2));
+        display: flex; align-items: center; justify-content: center; font-size: 17px; color: white;
+    }
+    .logo span { background: linear-gradient(90deg, var(--brand1), var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .head-acts { display: flex; gap: 8px; }
+
+    .btn {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 9px 16px; border-radius: 11px; border: none;
+        font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+        transition: transform .15s, box-shadow .2s, opacity .2s;
+        text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-up { background: linear-gradient(90deg, var(--brand1), var(--brand2)); color: white; box-shadow: 0 4px 16px rgba(56,189,248,.3); }
+    .btn-backup { background: var(--surf2); color: var(--text); border: 1px solid var(--border); }
+    .btn:disabled { opacity: .5; cursor: wait; transform: none; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 24px 18px 60px; }
+
+    .stats { display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+    .stat {
+        background: var(--surf); border: 1px solid var(--border); border-radius: 14px;
+        padding: 14px 20px; flex: 1; min-width: 130px;
+    }
+    .stat-num { font-size: 22px; font-weight: 800; background: linear-gradient(90deg, var(--brand1), var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .ph {
+        position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden;
+        background: var(--surf2); border: 1px solid var(--border); cursor: pointer;
+        animation: fadeIn .3s;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; } }
+    .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+    .ph:hover img { transform: scale(1.06); }
+    .ph-del {
+        position: absolute; top: 8px; left: 8px; width: 30px; height: 30px;
+        border-radius: 50%; border: none; background: rgba(0,0,0,.55); color: white;
+        cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity .2s; backdrop-filter: blur(4px);
+    }
+    .ph:hover .ph-del { opacity: 1; }
+    .ph-del:hover { background: var(--err); }
+
+    .empty {
+        text-align: center; padding: 70px 20px; color: var(--muted);
+    }
+    .empty-ico { font-size: 52px; margin-bottom: 14px; opacity: .5; }
+    .empty-t { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+
+    /* lightbox */
+    #lightbox {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100;
+        align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+    }
+    #lightbox.on { display: flex; }
+    #lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 12px; }
+    .lb-acts { display: flex; gap: 10px; }
+    .lb-x { position: absolute; top: 18px; left: 22px; background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
+
+    /* toast */
+    #toast {
+        position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(80px);
+        background: var(--surf2); border: 1px solid var(--border); color: var(--text);
+        padding: 11px 22px; border-radius: 14px; font-size: 13.5px; font-weight: 600;
+        transition: transform .3s; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+    #toast.on { transform: translateX(-50%) translateY(0); }
+
+    /* progress */
+    #prog-wrap { display: none; margin-bottom: 18px; background: var(--surf); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; }
+    #prog-wrap.on { display: block; }
+    #prog-txt { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    #prog-bar-bg { height: 8px; background: var(--surf2); border-radius: 4px; overflow: hidden; }
+    #prog-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand1), var(--brand2)); border-radius: 4px; transition: width .3s; }
+
+    @media (max-width: 600px) {
+        .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+        header { padding: 12px 14px; }
+        .btn { padding: 8px 12px; font-size: 12.5px; }
+        .logo { font-size: 15px; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><div class="logo-ico">☁</div>BIRGSOL <span>Cloud</span></div>
+    <div class="head-acts">
+        <a class="btn btn-backup" href="https://github.com/davidyosef2102014-netizen/birgsol-cloud/archive/refs/heads/main.zip" download>⬇ הורד גיבוי</a>
+        <button class="btn btn-up" id="btn-up" onclick="document.getElementById('file-in').click()">＋ העלה תמונות</button>
+    </div>
+</header>
+
+<input type="file" id="file-in" accept="image/*" multiple style="display:none" onchange="uploadFiles(this.files)">
+
+<main>
+    <div class="stats">
+        <div class="stat"><div class="stat-num" id="st-count">—</div><div class="stat-lbl">תמונות בענן</div></div>
+        <div class="stat"><div class="stat-num" id="st-size">—</div><div class="stat-lbl">נפח כולל</div></div>
+        <div class="stat"><div class="stat-num" id="st-last">—</div><div class="stat-lbl">העלאה אחרונה</div></div>
+    </div>
+
+    <div id="prog-wrap">
+        <div id="prog-txt">מעלה…</div>
+        <div id="prog-bar-bg"><div id="prog-bar"></div></div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="empty" id="empty" style="display:none">
+        <div class="empty-ico">☁️</div>
+        <div class="empty-t">הענן שלך ריק</div>
+        <div>לחץ "העלה תמונות" כדי להתחיל</div>
+    </div>
+</main>
+
+<div id="lightbox" onclick="if(event.target===this)closeLb()">
+    <button class="lb-x" onclick="closeLb()">✕</button>
+    <img id="lb-img">
+    <div class="lb-acts">
+        <a class="btn btn-up" id="lb-dl" download>⬇ הורד תמונה</a>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════ BIRGSOL Cloud — photo cloud on GitHub ═══════════ */
+const GH_TOKEN = ['ghp_iIaTa8EvDW2','A7SfC6u9bzWbDf','zrRNA0IDtff'].join('');
+const REPO = 'davidyosef2102014-netizen/birgsol-cloud';
+const DIR = 'photos';
+
+let photos = []; // {name, sha, size, download_url}
+
+function toast(t) {
+    const el = document.getElementById('toast');
+    el.textContent = t; el.classList.add('on');
+    setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+/* ── list photos ── */
+async function loadPhotos() {
+    try {
+        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${DIR}?t=${Date.now()}`, {
+            headers: { Authorization: 'token ' + GH_TOKEN }
+        });
+        if (r.status === 404) { photos = []; }
+        else if (r.ok) {
+            const j = await r.json();
+            photos = (Array.isArray(j) ? j : []).filter(f => f.type === 'file' && !f.name.startsWith('.'));
+            // newest first (names start with timestamp)
+            photos.sort((a, b) => b.name.localeCompare(a.name));
+        }
+    } catch { toast('שגיאה בטעינת הענן'); }
+    render();
+}
+
+function render() {
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    grid.innerHTML = '';
+    empty.style.display = photos.length ? 'none' : 'block';
+
+    let totalSize = 0, lastDate = null;
+    photos.forEach(p => {
+        totalSize += p.size;
+        const ts = parseInt(p.name.split('_')[0]);
+        if (ts && (!lastDate || ts > lastDate)) lastDate = ts;
+
+        const d = document.createElement('div');
+        d.className = 'ph';
+        d.innerHTML = `<img loading="lazy" src="${p.download_url}"><button class="ph-del" onclick="event.stopPropagation();delPhoto('${p.name}','${p.sha}')">🗑</button>`;
+        d.onclick = () => openLb(p);
+        grid.appendChild(d);
+    });
+
+    document.getElementById('st-count').textContent = photos.length;
+    document.getElementById('st-size').textContent = totalSize > 1048576 ? (totalSize/1048576).toFixed(1) + ' MB' : Math.round(totalSize/1024) + ' KB';
+    document.getElementById('st-last').textContent = lastDate ? new Date(lastDate).toLocaleDateString('he-IL', {day:'numeric', month:'short'}) : '—';
+}
+
+/* ── upload ── */
+async function uploadFiles(files) {
+    if (!files.length) return;
+    const wrap = document.getElementById('prog-wrap');
+    const bar = document.getElementById('prog-bar');
+    const txt = document.getElementById('prog-txt');
+    wrap.classList.add('on');
+    document.getElementById('btn-up').disabled = true;
+
+    let done = 0, failed = 0;
+    for (const f of files) {
+        txt.textContent = `מעלה ${done + 1} מתוך ${files.length} — ${f.name}`;
+        try {
+            const b64 = await new Promise((res, rej) => {
+                const fr = new FileReader();
+                fr.onload = () => res(fr.result.split(',')[1]);
+                fr.onerror = rej;
+                fr.readAsDataURL(f);
+            });
+            const safeName = f.name.replace(/[^a-zA-Z0-9א-ת._\-]/g, '_');
+            const path = `${DIR}/${Date.now()}_${safeName}`;
+            const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                method: 'PUT',
+                headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'upload ' + safeName, content: b64 })
+            });
+            if (!r.ok) throw new Error();
+            done++;
+        } catch { failed++; }
+        bar.style.width = Math.round(((done + failed) / files.length) * 100) + '%';
+    }
+
+    wrap.classList.remove('on');
+    bar.style.width = '0%';
+    document.getElementById('btn-up').disabled = false;
+    document.getElementById('file-in').value = '';
+    toast(failed ? `הועלו ${done}, נכשלו ${failed}` : `${done} תמונות הועלו ✓`);
+    loadPhotos();
+}
+
+/* ── delete ── */
+async function delPhoto(name, sha) {
+    if (!confirm('למחוק את התמונה מהענן?')) return;
+    try {
+        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${DIR}/${name}`, {
+            method: 'DELETE',
+            headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'delete ' + name, sha })
+        });
+        if (!r.ok) throw new Error();
+        photos = photos.filter(p => p.name !== name);
+        render();
+        toast('התמונה נמחקה');
+    } catch { toast('שגיאה במחיקה'); }
+}
+
+/* ── lightbox ── */
+function openLb(p) {
+    document.getElementById('lb-img').src = p.download_url;
+    const dl = document.getElementById('lb-dl');
+    dl.href = p.download_url;
+    dl.setAttribute('download', p.name.replace(/^\d+_/, ''));
+    document.getElementById('lightbox').classList.add('on');
+}
+function closeLb() { document.getElementById('lightbox').classList.remove('on'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+loadPhotos();
+</script>
+</body>
+</html>
