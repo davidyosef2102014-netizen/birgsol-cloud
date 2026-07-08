@@ -20,8 +20,9 @@
 
     header {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 16px 22px; border-bottom: 1px solid var(--border);
+        padding: 14px 22px; border-bottom: 1px solid var(--border);
         position: sticky; top: 0; background: rgba(13,15,20,.85); backdrop-filter: blur(12px); z-index: 10;
+        flex-wrap: wrap; gap: 10px;
     }
     .logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; }
     .logo-ico {
@@ -30,51 +31,66 @@
         display: flex; align-items: center; justify-content: center; font-size: 17px; color: white;
     }
     .logo span { background: linear-gradient(90deg, var(--brand1), var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .head-acts { display: flex; gap: 8px; }
+    .head-acts { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .btn {
         display: inline-flex; align-items: center; gap: 7px;
-        padding: 9px 16px; border-radius: 11px; border: none;
-        font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit;
+        padding: 9px 15px; border-radius: 11px; border: none;
+        font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
         transition: transform .15s, box-shadow .2s, opacity .2s;
-        text-decoration: none;
+        text-decoration: none; color: var(--text);
     }
     .btn:hover { transform: translateY(-1px); }
     .btn-up { background: linear-gradient(90deg, var(--brand1), var(--brand2)); color: white; box-shadow: 0 4px 16px rgba(56,189,248,.3); }
-    .btn-backup { background: var(--surf2); color: var(--text); border: 1px solid var(--border); }
+    .btn-sec { background: var(--surf2); border: 1px solid var(--border); }
     .btn:disabled { opacity: .5; cursor: wait; transform: none; }
 
-    main { max-width: 1100px; margin: 0 auto; padding: 24px 18px 60px; }
+    main { max-width: 1100px; margin: 0 auto; padding: 20px 18px 60px; }
 
-    .stats { display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
-    .stat {
-        background: var(--surf); border: 1px solid var(--border); border-radius: 14px;
-        padding: 14px 20px; flex: 1; min-width: 130px;
-    }
-    .stat-num { font-size: 22px; font-weight: 800; background: linear-gradient(90deg, var(--brand1), var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    /* breadcrumb */
+    .crumbs { display: flex; align-items: center; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; font-size: 14px; }
+    .crumb { background: none; border: none; color: var(--brand1); cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; padding: 4px 6px; border-radius: 7px; }
+    .crumb:hover { background: var(--surf2); }
+    .crumb.here { color: var(--text); cursor: default; }
+    .crumb.here:hover { background: none; }
+    .crumb-sep { color: var(--muted); }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .ph {
-        position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden;
-        background: var(--surf2); border: 1px solid var(--border); cursor: pointer;
-        animation: fadeIn .3s;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; } }
-    .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
-    .ph:hover img { transform: scale(1.06); }
-    .ph-del {
-        position: absolute; top: 8px; left: 8px; width: 30px; height: 30px;
-        border-radius: 50%; border: none; background: rgba(0,0,0,.55); color: white;
-        cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
-        opacity: 0; transition: opacity .2s; backdrop-filter: blur(4px);
-    }
-    .ph:hover .ph-del { opacity: 1; }
-    .ph-del:hover { background: var(--err); }
+    .stats { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .stat { background: var(--surf); border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px; flex: 1; min-width: 120px; }
+    .stat-num { font-size: 20px; font-weight: 800; background: linear-gradient(90deg, var(--brand1), var(--brand2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .stat-lbl { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
-    .empty {
-        text-align: center; padding: 70px 20px; color: var(--muted);
+    /* file list */
+    .list { display: flex; flex-direction: column; gap: 6px; }
+    .item {
+        display: flex; align-items: center; gap: 13px;
+        background: var(--surf); border: 1px solid var(--border);
+        border-radius: 13px; padding: 11px 16px; cursor: pointer;
+        transition: border-color .2s, transform .12s; animation: fadeIn .25s;
     }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+    .item:hover { border-color: var(--brand1); }
+    .item-ico {
+        width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; font-size: 19px;
+        background: var(--surf2); overflow: hidden;
+    }
+    .item-ico img { width: 100%; height: 100%; object-fit: cover; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-meta { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+    .item-acts { display: flex; gap: 4px; opacity: 0; transition: opacity .15s; }
+    .item:hover .item-acts { opacity: 1; }
+    .ia-btn {
+        width: 32px; height: 32px; border-radius: 9px; border: none;
+        background: var(--surf2); color: var(--muted); cursor: pointer; font-size: 14px;
+        display: flex; align-items: center; justify-content: center; text-decoration: none;
+        transition: color .15s, background .15s;
+    }
+    .ia-btn:hover { color: var(--text); background: var(--border); }
+    .ia-btn.del:hover { color: white; background: var(--err); }
+
+    .empty { text-align: center; padding: 70px 20px; color: var(--muted); }
     .empty-ico { font-size: 52px; margin-bottom: 14px; opacity: .5; }
     .empty-t { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
 
@@ -84,11 +100,9 @@
         align-items: center; justify-content: center; flex-direction: column; gap: 16px;
     }
     #lightbox.on { display: flex; }
-    #lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 12px; }
-    .lb-acts { display: flex; gap: 10px; }
+    #lightbox img { max-width: 92vw; max-height: 78vh; border-radius: 12px; }
     .lb-x { position: absolute; top: 18px; left: 22px; background: none; border: none; color: white; font-size: 30px; cursor: pointer; }
 
-    /* toast */
     #toast {
         position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(80px);
         background: var(--surf2); border: 1px solid var(--border); color: var(--text);
@@ -97,18 +111,27 @@
     }
     #toast.on { transform: translateX(-50%) translateY(0); }
 
-    /* progress */
-    #prog-wrap { display: none; margin-bottom: 18px; background: var(--surf); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; }
+    #prog-wrap { display: none; margin-bottom: 16px; background: var(--surf); border: 1px solid var(--border); border-radius: 14px; padding: 13px 18px; }
     #prog-wrap.on { display: block; }
     #prog-txt { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
     #prog-bar-bg { height: 8px; background: var(--surf2); border-radius: 4px; overflow: hidden; }
     #prog-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--brand1), var(--brand2)); border-radius: 4px; transition: width .3s; }
 
+    /* drag & drop */
+    body.dragging::after {
+        content: 'שחרר כדי להעלות ⬇';
+        position: fixed; inset: 12px; border: 3px dashed var(--brand1); border-radius: 22px;
+        background: rgba(56,189,248,.08); z-index: 90;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; font-weight: 800; color: var(--brand1);
+        pointer-events: none;
+    }
+
     @media (max-width: 600px) {
-        .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-        header { padding: 12px 14px; }
-        .btn { padding: 8px 12px; font-size: 12.5px; }
+        header { padding: 11px 12px; }
+        .btn { padding: 8px 11px; font-size: 12px; }
         .logo { font-size: 15px; }
+        .item-acts { opacity: 1; }
     }
 </style>
 </head>
@@ -117,18 +140,20 @@
 <header>
     <div class="logo"><div class="logo-ico">☁</div>BIRGSOL <span>Cloud</span></div>
     <div class="head-acts">
-        <a class="btn btn-backup" href="https://github.com/davidyosef2102014-netizen/birgsol-cloud/archive/refs/heads/main.zip" download>⬇ הורד גיבוי</a>
-        <button class="btn btn-up" id="btn-up" onclick="document.getElementById('file-in').click()">＋ העלה תמונות</button>
+        <a class="btn btn-sec" href="https://github.com/davidyosef2102014-netizen/birgsol-cloud/archive/refs/heads/main.zip" download>⬇ גיבוי מלא</a>
+        <button class="btn btn-sec" onclick="newFolder()">📁 תיקייה חדשה</button>
+        <button class="btn btn-up" id="btn-up" onclick="document.getElementById('file-in').click()">＋ העלה קבצים</button>
     </div>
 </header>
 
-<input type="file" id="file-in" accept="image/*" multiple style="display:none" onchange="uploadFiles(this.files)">
+<input type="file" id="file-in" multiple style="display:none" onchange="uploadFiles(this.files)">
 
 <main>
+    <div class="crumbs" id="crumbs"></div>
+
     <div class="stats">
-        <div class="stat"><div class="stat-num" id="st-count">—</div><div class="stat-lbl">תמונות בענן</div></div>
-        <div class="stat"><div class="stat-num" id="st-size">—</div><div class="stat-lbl">נפח כולל</div></div>
-        <div class="stat"><div class="stat-num" id="st-last">—</div><div class="stat-lbl">העלאה אחרונה</div></div>
+        <div class="stat"><div class="stat-num" id="st-count">—</div><div class="stat-lbl">פריטים כאן</div></div>
+        <div class="stat"><div class="stat-num" id="st-size">—</div><div class="stat-lbl">נפח (בתיקייה)</div></div>
     </div>
 
     <div id="prog-wrap">
@@ -136,12 +161,12 @@
         <div id="prog-bar-bg"><div id="prog-bar"></div></div>
     </div>
 
-    <div class="grid" id="grid"></div>
+    <div class="list" id="list"></div>
 
     <div class="empty" id="empty" style="display:none">
         <div class="empty-ico">☁️</div>
-        <div class="empty-t">הענן שלך ריק</div>
-        <div>לחץ "העלה תמונות" כדי להתחיל</div>
+        <div class="empty-t">התיקייה ריקה</div>
+        <div>העלה קבצים או גרור אותם לכאן</div>
     </div>
 </main>
 
@@ -149,19 +174,49 @@
     <button class="lb-x" onclick="closeLb()">✕</button>
     <img id="lb-img">
     <div class="lb-acts">
-        <a class="btn btn-up" id="lb-dl" download>⬇ הורד תמונה</a>
+        <a class="btn btn-up" id="lb-dl" download>⬇ הורד</a>
     </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-/* ═══════════ BIRGSOL Cloud — photo cloud on GitHub ═══════════ */
+/* ═══════════ BIRGSOL Cloud — full file cloud on GitHub ═══════════ */
 const GH_TOKEN = ['ghp_iIaTa8EvDW2','A7SfC6u9bzWbDf','zrRNA0IDtff'].join('');
 const REPO = 'davidyosef2102014-netizen/birgsol-cloud';
-const DIR = 'photos';
+const ROOT = 'files';
+const MAX_MB = 25; // GitHub contents API safe limit per file
 
-let photos = []; // {name, sha, size, download_url}
+let curPath = ROOT;   // current folder path
+let items = [];       // current folder contents
+
+const IMG_EXT = ['jpg','jpeg','png','gif','webp','bmp','svg','avif'];
+const ICONS = {
+    folder: '📁', img: '🖼️', vid: '🎬', aud: '🎵', pdf: '📕',
+    doc: '📄', xls: '📊', ppt: '📽️', zip: '🗜️', code: '💻', txt: '📝', file: '📎'
+};
+function iconFor(name, type) {
+    if (type === 'dir') return ICONS.folder;
+    const e = name.split('.').pop().toLowerCase();
+    if (IMG_EXT.includes(e)) return ICONS.img;
+    if (['mp4','mov','avi','webm','mkv'].includes(e)) return ICONS.vid;
+    if (['mp3','wav','ogg','m4a','flac'].includes(e)) return ICONS.aud;
+    if (e === 'pdf') return ICONS.pdf;
+    if (['doc','docx','odt'].includes(e)) return ICONS.doc;
+    if (['xls','xlsx','csv'].includes(e)) return ICONS.xls;
+    if (['ppt','pptx'].includes(e)) return ICONS.ppt;
+    if (['zip','rar','7z','tar','gz'].includes(e)) return ICONS.zip;
+    if (['js','html','css','py','json','java','cpp','c','ts'].includes(e)) return ICONS.code;
+    if (['txt','md','rtf'].includes(e)) return ICONS.txt;
+    return ICONS.file;
+}
+function isImg(name) { return IMG_EXT.includes(name.split('.').pop().toLowerCase()); }
+function fmtSize(b) {
+    if (b > 1073741824) return (b/1073741824).toFixed(1) + ' GB';
+    if (b > 1048576) return (b/1048576).toFixed(1) + ' MB';
+    return Math.max(1, Math.round(b/1024)) + ' KB';
+}
+function cleanName(n) { return n.replace(/^\d{13}_/, ''); }
 
 function toast(t) {
     const el = document.getElementById('toast');
@@ -169,45 +224,83 @@ function toast(t) {
     setTimeout(() => el.classList.remove('on'), 2600);
 }
 
-/* ── list photos ── */
-async function loadPhotos() {
+/* ── load current folder ── */
+async function load() {
     try {
-        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${DIR}?t=${Date.now()}`, {
+        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${curPath}?t=${Date.now()}`, {
             headers: { Authorization: 'token ' + GH_TOKEN }
         });
-        if (r.status === 404) { photos = []; }
+        if (r.status === 404) { items = []; }
         else if (r.ok) {
             const j = await r.json();
-            photos = (Array.isArray(j) ? j : []).filter(f => f.type === 'file' && !f.name.startsWith('.'));
-            // newest first (names start with timestamp)
-            photos.sort((a, b) => b.name.localeCompare(a.name));
+            items = (Array.isArray(j) ? j : []).filter(f => f.name !== '.keep');
+            items.sort((a, b) => (a.type === b.type) ? b.name.localeCompare(a.name) : (a.type === 'dir' ? -1 : 1));
         }
-    } catch { toast('שגיאה בטעינת הענן'); }
+    } catch { toast('שגיאה בטעינת הענן'); items = []; }
     render();
 }
 
 function render() {
-    const grid = document.getElementById('grid');
+    renderCrumbs();
+    const list = document.getElementById('list');
     const empty = document.getElementById('empty');
-    grid.innerHTML = '';
-    empty.style.display = photos.length ? 'none' : 'block';
+    list.innerHTML = '';
+    empty.style.display = items.length ? 'none' : 'block';
 
-    let totalSize = 0, lastDate = null;
-    photos.forEach(p => {
-        totalSize += p.size;
-        const ts = parseInt(p.name.split('_')[0]);
-        if (ts && (!lastDate || ts > lastDate)) lastDate = ts;
-
+    let totalSize = 0;
+    items.forEach(it => {
+        totalSize += it.size || 0;
         const d = document.createElement('div');
-        d.className = 'ph';
-        d.innerHTML = `<img loading="lazy" src="${p.download_url}"><button class="ph-del" onclick="event.stopPropagation();delPhoto('${p.name}','${p.sha}')">🗑</button>`;
-        d.onclick = () => openLb(p);
-        grid.appendChild(d);
+        d.className = 'item';
+        const disp = it.type === 'dir' ? it.name : cleanName(it.name);
+        const thumb = (it.type === 'file' && isImg(it.name))
+            ? `<img loading="lazy" src="${it.download_url}">`
+            : iconFor(it.name, it.type);
+        const meta = it.type === 'dir' ? 'תיקייה' : fmtSize(it.size);
+
+        let acts = '';
+        if (it.type === 'file') acts += `<a class="ia-btn" href="${it.download_url}" download="${disp}" onclick="event.stopPropagation()" title="הורד">⬇</a>`;
+        acts += `<button class="ia-btn del" onclick="event.stopPropagation();delItem('${it.path}','${it.sha}','${it.type}')" title="מחק">🗑</button>`;
+
+        d.innerHTML = `<div class="item-ico">${thumb}</div>
+            <div class="item-info"><div class="item-name">${disp}</div><div class="item-meta">${meta}</div></div>
+            <div class="item-acts">${acts}</div>`;
+        d.onclick = () => openItem(it);
+        list.appendChild(d);
     });
 
-    document.getElementById('st-count').textContent = photos.length;
-    document.getElementById('st-size').textContent = totalSize > 1048576 ? (totalSize/1048576).toFixed(1) + ' MB' : Math.round(totalSize/1024) + ' KB';
-    document.getElementById('st-last').textContent = lastDate ? new Date(lastDate).toLocaleDateString('he-IL', {day:'numeric', month:'short'}) : '—';
+    document.getElementById('st-count').textContent = items.length;
+    document.getElementById('st-size').textContent = fmtSize(totalSize);
+}
+
+function renderCrumbs() {
+    const c = document.getElementById('crumbs');
+    const parts = curPath.split('/');
+    let html = '';
+    let acc = '';
+    parts.forEach((p, i) => {
+        acc = i === 0 ? p : acc + '/' + p;
+        const label = i === 0 ? '☁ הענן שלי' : p;
+        const here = i === parts.length - 1;
+        html += `<button class="crumb ${here?'here':''}" onclick="goTo('${acc}')">${label}</button>`;
+        if (!here) html += '<span class="crumb-sep">‹</span>';
+    });
+    c.innerHTML = html;
+}
+
+function goTo(p) { curPath = p; load(); }
+
+function openItem(it) {
+    if (it.type === 'dir') { curPath = it.path; load(); return; }
+    if (isImg(it.name)) {
+        document.getElementById('lb-img').src = it.download_url;
+        const dl = document.getElementById('lb-dl');
+        dl.href = it.download_url;
+        dl.setAttribute('download', cleanName(it.name));
+        document.getElementById('lightbox').classList.add('on');
+    } else {
+        window.open(it.download_url, '_blank');
+    }
 }
 
 /* ── upload ── */
@@ -221,7 +314,11 @@ async function uploadFiles(files) {
 
     let done = 0, failed = 0;
     for (const f of files) {
-        txt.textContent = `מעלה ${done + 1} מתוך ${files.length} — ${f.name}`;
+        if (f.size > MAX_MB * 1048576) {
+            toast(`"${f.name}" גדול מדי (מקס ${MAX_MB}MB)`); failed++;
+            continue;
+        }
+        txt.textContent = `מעלה ${done + failed + 1} מתוך ${files.length} — ${f.name}`;
         try {
             const b64 = await new Promise((res, rej) => {
                 const fr = new FileReader();
@@ -230,7 +327,7 @@ async function uploadFiles(files) {
                 fr.readAsDataURL(f);
             });
             const safeName = f.name.replace(/[^a-zA-Z0-9א-ת._\-]/g, '_');
-            const path = `${DIR}/${Date.now()}_${safeName}`;
+            const path = `${curPath}/${Date.now()}_${safeName}`;
             const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
                 method: 'PUT',
                 headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
@@ -246,38 +343,87 @@ async function uploadFiles(files) {
     bar.style.width = '0%';
     document.getElementById('btn-up').disabled = false;
     document.getElementById('file-in').value = '';
-    toast(failed ? `הועלו ${done}, נכשלו ${failed}` : `${done} תמונות הועלו ✓`);
-    loadPhotos();
+    toast(failed ? `הועלו ${done}, נכשלו ${failed}` : `${done} קבצים הועלו ✓`);
+    load();
+}
+
+/* ── new folder ── */
+async function newFolder() {
+    const name = prompt('שם התיקייה:');
+    if (!name) return;
+    const safe = name.trim().replace(/[^a-zA-Z0-9א-ת._\- ]/g, '');
+    if (!safe) return toast('שם לא תקין');
+    try {
+        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${curPath}/${safe}/.keep`, {
+            method: 'PUT',
+            headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'new folder ' + safe, content: btoa('birgsol') })
+        });
+        if (!r.ok) throw new Error();
+        toast('התיקייה נוצרה ✓');
+        load();
+    } catch { toast('שגיאה ביצירת תיקייה'); }
 }
 
 /* ── delete ── */
-async function delPhoto(name, sha) {
-    if (!confirm('למחוק את התמונה מהענן?')) return;
+async function delItem(path, sha, type) {
+    if (type === 'dir') {
+        if (!confirm('למחוק את התיקייה וכל מה שבתוכה?')) return;
+        // delete all files inside recursively
+        try {
+            await delFolderRec(path);
+            toast('התיקייה נמחקה');
+            load();
+        } catch { toast('שגיאה במחיקה'); }
+        return;
+    }
+    if (!confirm('למחוק את הקובץ מהענן?')) return;
     try {
-        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${DIR}/${name}`, {
+        const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
             method: 'DELETE',
             headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: 'delete ' + name, sha })
+            body: JSON.stringify({ message: 'delete', sha })
         });
         if (!r.ok) throw new Error();
-        photos = photos.filter(p => p.name !== name);
+        items = items.filter(i => i.path !== path);
         render();
-        toast('התמונה נמחקה');
+        toast('נמחק ✓');
     } catch { toast('שגיאה במחיקה'); }
 }
 
-/* ── lightbox ── */
-function openLb(p) {
-    document.getElementById('lb-img').src = p.download_url;
-    const dl = document.getElementById('lb-dl');
-    dl.href = p.download_url;
-    dl.setAttribute('download', p.name.replace(/^\d+_/, ''));
-    document.getElementById('lightbox').classList.add('on');
+async function delFolderRec(path) {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+        headers: { Authorization: 'token ' + GH_TOKEN }
+    });
+    if (!r.ok) return;
+    const files = await r.json();
+    for (const f of files) {
+        if (f.type === 'dir') await delFolderRec(f.path);
+        else await fetch(`https://api.github.com/repos/${REPO}/contents/${f.path}`, {
+            method: 'DELETE',
+            headers: { Authorization: 'token ' + GH_TOKEN, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'delete folder', sha: f.sha })
+        });
+    }
 }
+
+/* ── lightbox ── */
 function closeLb() { document.getElementById('lightbox').classList.remove('on'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
 
-loadPhotos();
+/* ── drag & drop upload ── */
+let dragCount = 0;
+document.addEventListener('dragenter', e => { e.preventDefault(); dragCount++; document.body.classList.add('dragging'); });
+document.addEventListener('dragleave', e => { e.preventDefault(); if (--dragCount <= 0) { dragCount = 0; document.body.classList.remove('dragging'); } });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+    e.preventDefault();
+    dragCount = 0;
+    document.body.classList.remove('dragging');
+    if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+});
+
+load();
 </script>
 </body>
 </html>
