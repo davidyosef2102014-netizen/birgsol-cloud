@@ -133,14 +133,64 @@
         .logo { font-size: 15px; }
         .item-acts { opacity: 1; }
     }
+
+    /* login gate */
+    #gate {
+        position: fixed; inset: 0; background: var(--bg); z-index: 500;
+        display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 18px;
+        background-image: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(56,189,248,.14), transparent);
+        text-align: center; padding: 20px;
+    }
+    .gate-ico {
+        width: 76px; height: 76px; border-radius: 22px;
+        background: linear-gradient(135deg, var(--brand1), var(--brand2));
+        display: flex; align-items: center; justify-content: center; font-size: 36px; color: white;
+        box-shadow: 0 14px 44px rgba(56,189,248,.35);
+    }
+    .gate-t { font-size: 24px; font-weight: 800; }
+    .gate-s { color: var(--muted); font-size: 14px; max-width: 300px; line-height: 1.6; }
+    .gate-btn {
+        display: inline-flex; align-items: center; gap: 9px;
+        background: linear-gradient(90deg, #6c63ff, #a78bfa); color: white;
+        padding: 13px 30px; border-radius: 14px; font-size: 15.5px; font-weight: 700;
+        text-decoration: none; transition: transform .15s, box-shadow .2s;
+    }
+    .gate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(108,99,255,.4); }
+
+    /* account chip */
+    .acc-chip {
+        display: flex; align-items: center; gap: 8px;
+        background: var(--surf2); border: 1px solid var(--border);
+        border-radius: 20px; padding: 5px 12px 5px 6px; font-size: 13px; font-weight: 600;
+    }
+    .acc-ava {
+        width: 26px; height: 26px; border-radius: 50%;
+        background: linear-gradient(135deg, #6c63ff, #a78bfa);
+        display: flex; align-items: center; justify-content: center;
+        color: white; font-size: 12px; font-weight: 800;
+    }
+    .acc-out { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px; }
+    .acc-out:hover { color: var(--err); }
 </style>
 </head>
 <body>
 
+<div id="gate" style="display:none">
+    <div class="gate-ico">☁</div>
+    <div class="gate-t">BIRGSOL Cloud</div>
+    <div class="gate-s">הענן האישי שלך. כל קובץ, מכל מקום.<br>התחבר עם חשבון BIRGSOL כדי להיכנס לענן הפרטי שלך.</div>
+    <a class="gate-btn" id="gate-login">✦ התחבר עם BIRGSOL</a>
+</div>
+
 <header>
     <div class="logo"><div class="logo-ico">☁</div>BIRGSOL <span>Cloud</span></div>
     <div class="head-acts">
-        <a class="btn btn-sec" href="https://github.com/davidyosef2102014-netizen/birgsol-cloud/archive/refs/heads/main.zip" download>⬇ גיבוי מלא</a>
+        <div class="acc-chip" id="acc-chip" style="display:none">
+            <div class="acc-ava" id="acc-ava">?</div>
+            <span id="acc-name"></span>
+            <button class="acc-out" onclick="cloudLogout()" title="התנתק">✕</button>
+        </div>
+        <button class="btn btn-sec" id="btn-backup" onclick="backupZip()">⬇ גיבוי מלא</button>
         <button class="btn btn-sec" onclick="newFolder()">📁 תיקייה חדשה</button>
         <button class="btn btn-up" id="btn-up" onclick="document.getElementById('file-in').click()">＋ העלה קבצים</button>
     </div>
@@ -184,8 +234,33 @@
 /* ═══════════ BIRGSOL Cloud — full file cloud on GitHub ═══════════ */
 const GH_TOKEN = ['ghp_iIaTa8EvDW2','A7SfC6u9bzWbDf','zrRNA0IDtff'].join('');
 const REPO = 'davidyosef2102014-netizen/birgsol-cloud';
-const ROOT = 'files';
 const MAX_MB = 25; // GitHub contents API safe limit per file
+const SSO_KEY = 'birgsol_id';
+const ID_URL = 'https://davidyosef2102014-netizen.github.io/birgsol-id/';
+
+/* ── BIRGSOL ID login gate — every user gets a private cloud ── */
+let account = null;
+try { account = JSON.parse(localStorage.getItem(SSO_KEY)); } catch {}
+if (!account || !account.user) {
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('gate').style.display = 'flex';
+        document.getElementById('gate-login').href = ID_URL + '?redirect=' + encodeURIComponent(location.href);
+    });
+} else {
+    document.addEventListener('DOMContentLoaded', () => {
+        const chip = document.getElementById('acc-chip');
+        chip.style.display = 'flex';
+        document.getElementById('acc-ava').textContent = (account.name || account.user)[0].toUpperCase();
+        document.getElementById('acc-name').textContent = account.name || account.user;
+    });
+}
+
+function cloudLogout() {
+    localStorage.removeItem(SSO_KEY);
+    location.reload();
+}
+
+const ROOT = account ? 'files/' + account.user.toLowerCase() : 'files/_none';
 
 let curPath = ROOT;   // current folder path
 let items = [];       // current folder contents
@@ -275,15 +350,13 @@ function render() {
 
 function renderCrumbs() {
     const c = document.getElementById('crumbs');
-    const parts = curPath.split('/');
-    let html = '';
-    let acc = '';
-    parts.forEach((p, i) => {
-        acc = i === 0 ? p : acc + '/' + p;
-        const label = i === 0 ? '☁ הענן שלי' : p;
-        const here = i === parts.length - 1;
-        html += `<button class="crumb ${here?'here':''}" onclick="goTo('${acc}')">${label}</button>`;
-        if (!here) html += '<span class="crumb-sep">‹</span>';
+    const rel = curPath.slice(ROOT.length).split('/').filter(Boolean);
+    let html = `<button class="crumb ${rel.length ? '' : 'here'}" onclick="goTo('${ROOT}')">☁ הענן שלי</button>`;
+    let acc = ROOT;
+    rel.forEach((p, i) => {
+        acc += '/' + p;
+        const here = i === rel.length - 1;
+        html += `<span class="crumb-sep">‹</span><button class="crumb ${here?'here':''}" onclick="goTo('${acc}')">${p}</button>`;
     });
     c.innerHTML = html;
 }
@@ -407,6 +480,53 @@ async function delFolderRec(path) {
     }
 }
 
+/* ── per-user backup ZIP (client-side, only YOUR files) ── */
+async function backupZip() {
+    const btn = document.getElementById('btn-backup');
+    btn.disabled = true; btn.textContent = 'אוסף קבצים…';
+    try {
+        // load JSZip on demand
+        if (!window.JSZip) {
+            await new Promise((res, rej) => {
+                const s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                s.onload = res; s.onerror = rej;
+                document.head.appendChild(s);
+            });
+        }
+        const zip = new JSZip();
+        let count = 0;
+        const walk = async (path, zipFolder) => {
+            const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?t=${Date.now()}`, {
+                headers: { Authorization: 'token ' + GH_TOKEN }
+            });
+            if (!r.ok) return;
+            const list = await r.json();
+            for (const f of (Array.isArray(list) ? list : [])) {
+                if (f.name === '.keep') continue;
+                if (f.type === 'dir') {
+                    await walk(f.path, zipFolder.folder(f.name));
+                } else {
+                    btn.textContent = `מוריד ${++count}…`;
+                    const blob = await (await fetch(f.download_url)).blob();
+                    zipFolder.file(cleanName(f.name), blob);
+                }
+            }
+        };
+        await walk(ROOT, zip);
+        if (!count) { toast('אין קבצים לגיבוי'); return; }
+        btn.textContent = 'אורז…';
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `birgsol-cloud-${account.user}-${new Date().toISOString().slice(0,10)}.zip`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+        toast(`גיבוי של ${count} קבצים ירד ✓`);
+    } catch { toast('שגיאה בגיבוי'); }
+    finally { btn.disabled = false; btn.textContent = '⬇ גיבוי מלא'; }
+}
+
 /* ── lightbox ── */
 function closeLb() { document.getElementById('lightbox').classList.remove('on'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
@@ -423,7 +543,7 @@ document.addEventListener('drop', e => {
     if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
 });
 
-load();
+if (account) load();
 </script>
 </body>
 </html>
